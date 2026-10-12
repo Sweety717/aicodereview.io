@@ -1,0 +1,88 @@
+---
+title: "Best AI Code Review Tools for a Team on GitLab (2026)"
+description: "GitLab changes what an AI reviewer can actually do. The provider matrix, the GitLab-capable tools scored against the same nine standards, and seven checks to run on your own merge requests."
+pubDate: 2026-10-12
+category: "best-of"
+tags: ["gitlab", "aicodereview", "codereviewtools", "mergerequests"]
+---
+
+Most "best AI code review tool" lists are written against a GitHub repo. If your merge requests live in GitLab, the tool you pick behaves differently the moment it has to write back, and the differences are documented in places that never make the marketing page.
+
+Start with one cell. In CodeRabbit's [provider support matrix](https://docs.coderabbit.ai/change-stack/provider-support.md), the draft review row reads "native provider drafts" for GitHub and "held by CodeRabbit" for GitLab. The GitLab page spells out the consequence: the draft does not appear in GitLab until you submit it, and an unsubmitted draft expires after 24 hours. One product, two mechanics, decided by which host your MR is on.
+
+That is the shape of the problem. "Supports GitLab" is a checkbox on a pricing page. What you get on GitLab is a narrower write-back path, and the provider docs are where the real comparison lives.
+
+## What "supports GitLab" actually means
+
+Every reviewer worth shortlisting can read a diff on GitLab. The differences show up in what it can do to the merge request afterwards, and that is the part your team touches every day.
+
+GitLab gets inline review comments, file-level comments without a line anchor, submitting a review, and thread replies with resolution. What it does not get: direct merge and merge-queue control, which the matrix marks as GitHub-only. Draft reviews are held by the vendor rather than by GitLab, with the 24-hour expiry. Applying a committable suggestion uses different mechanics from GitHub, so a suggestion that applies cleanly on one host is not guaranteed to apply the same way on GitLab. The activity timeline is built from synthesized review checkpoints, where GitHub's is built from real provider events.
+
+None of that is fatal, and none of it shows up in a GitHub demo, which is how most evaluations happen.
+
+## GitLab's own reviewer, and where it stops
+
+If your team already runs GitLab Duo Enterprise, there is a reviewer in the box. [GitLab Duo Code Review](https://docs.gitlab.com/user/gitlab_duo/code_review/) is available on Premium and Ultimate with the Duo Enterprise add-on, and GitLab runs one of two features depending on your add-on and group settings: the agentic Code Review Flow, or the non-agentic Duo Code Review.
+
+Two documented behaviors matter if you plan to build a process on it. On a large merge request, the first request includes the diffs and the original file contents. If that fails, GitLab retries without the original file contents, which cuts the context the model reviews against and can make comments less specific. If the retry also fails you get a generic error, and the AI Gateway timeout is 120 seconds.
+
+The other one is about learning. GitLab's docs state that feedback you give the reviewer does not influence later reviews of other merge requests, and they link the open feature request for it. If part of your plan is "we will correct it and it gets better", that part is not available today.
+
+## The GitLab-capable tools, ranked by documented coverage
+
+This is where a scored directory beats a listicle. Every profile on [aicodereview.io](https://aicodereview.io/tools/) is rated against the same nine public standards, with a source and a verification date on each claim. Filter to the tools whose documented platform list includes GitLab:
+
+| Tool | Coverage | Notes that matter on GitLab |
+| - | - | - |
+| [Baz](https://aicodereview.io/tools/baz/) | 6.5/9 | Review agents on GitHub, GitLab and Azure DevOps with sandbox execution; Private Mode data-plane pod on Pro and Enterprise, full VPC is Enterprise |
+| [Kodus](https://aicodereview.io/tools/kodus/) | 6.5/9 | GitHub, GitLab, Bitbucket, Azure DevOps and Forgejo; AGPL-3.0, free full self-host, BYOK on every plan |
+| [CodeAnt AI](https://aicodereview.io/tools/codeant/) | 6.5/9 | GitHub, GitLab, Bitbucket, Azure DevOps; connects to self-managed SCMs including GitLab self-managed; on-prem is Enterprise |
+| [Entelligence AI](https://aicodereview.io/tools/entelligence/) | 6.5/9 | GitHub, GitLab, Bitbucket; documented self-host into your own AWS account via CloudFormation |
+| [CodeRabbit](https://aicodereview.io/tools/coderabbit/) | 6/9 | The provider matrix above is theirs; GitLab integration runs through a service account token or a group token |
+| [Greptile](https://aicodereview.io/tools/greptile/) | 4.5/9 | GitHub and GitLab only; self-host is Enterprise |
+| [Tabnine](https://aicodereview.io/tools/tabnine/) | 4.5/9 | GitHub, GitLab, Bitbucket; SaaS, VPC, on-premises and air-gapped deployment options |
+| [Qodo](https://aicodereview.io/tools/qodo/) | 3.5/9 | GitHub, GitLab, Bitbucket, Azure DevOps; on-prem and air-gapped are Enterprise |
+| [PR-Agent](https://aicodereview.io/tools/pr-agent/) | 2.5/9 | MIT, self-hosted, full BYOK via LiteLLM, GitLab included |
+| [Bito](https://aicodereview.io/tools/bito/) | 2.5/9 | GitHub, GitLab, Bitbucket; supports self-managed git |
+| [Cursor BugBot](https://aicodereview.io/tools/cursor-bugbot/) | 2.5/9 | GitHub, GitLab, Bitbucket, Azure DevOps; SaaS-only, no self-host |
+| [Sourcery](https://aicodereview.io/tools/sourcery/) | 1.5/9 | GitHub and GitLab; BYO-LLM and self-host on the higher tiers |
+
+Two tools that top general rankings do not appear here at all. Cubic holds the highest coverage score in the directory and lists GitHub only. GitHub Copilot code review is GitHub-only by name and by design. If your team is on GitLab, those rankings belong to someone else.
+
+Coverage score is a measure of documented capability, not measured review quality. The [scoring formula](https://aicodereview.io/methodology/) is public, and a 6.5 means the tool documents six and a half of the nine standards, nothing more. Use it to build the shortlist, then measure on your own merge requests.
+
+## Self-managed GitLab adds setup you should price in
+
+If your GitLab is self-hosted, the integration cost is real and it is documented. CodeRabbit's [self-managed GitLab guide](https://docs.coderabbit.ai/platforms/self-hosted-gitlab.md) requires GitLab 16.x or above, with 15.x flagged for issues such as review comments not being posted. Setup needs an admin access token once, an OAuth2 application with the `api read_user email openid` scopes, an IP allowlist for the vendor's addresses, and webhooks that can be installed by hand or in bulk with a script that needs Bash 4 or later.
+
+On GitLab.com the same shape shows up differently. CodeRabbit's [GitLab integration page](https://docs.coderabbit.ai/platforms/gitlab-com.md) needs a GitLab admin for the one-time token setup, recommends a dedicated service account, and notes that reviews are attributed to the owner of the access token. Group access tokens are restricted to Premium and Ultimate. Installing on individual projects needs project Owner or Maintainer, while a group-wide install needs group Owner.
+
+That is a week-one cost for a platform team, and no generic tool ranking mentions it. The same applies to the vendors that connect to self-managed SCMs instead of self-hosting the review service: CodeAnt AI documents GitLab self-managed connectivity, Entelligence documents a CloudFormation self-host into your own AWS account, and Tabnine lists VPC, on-premises and air-gapped options across both plans.
+
+## A GitLab evaluation checklist
+
+Run these against the shortlist on your own GitLab, not on a demo repo.
+
+1. Post a review comment that has no line to attach to. Does it land, or does the tool require a line anchor?
+2. Start a draft review and leave it unsubmitted overnight. Is it still there after 24 hours, and where does it live?
+3. Apply a committable suggestion on a merge request and confirm it applies the way it does on GitHub.
+4. Look for a direct merge or merge-queue control. If it is missing, decide what your process does instead.
+5. Open a large merge request and compare the comment specificity against a small one. A reviewer that quietly drops file contents on retry will read differently at scale.
+6. Give the reviewer a correction, then open a different merge request a day later. Did anything carry over?
+7. If you self-host, check your GitLab version against the vendor's minimum and count the admin steps before you promise a rollout date.
+
+Two of those, the 24-hour draft and the correction carry-over, cannot be run on a GitHub-only evaluation. That is how teams on GitLab end up surprised after the pilot.
+
+## What I would do
+
+Shortlist on documented GitLab support first, then on the write-back matrix, then on coverage score. If your GitLab is self-managed or air-gapped, weight self-hosting above review quality, because a reviewer you cannot deploy never posts a comment. Kodus, PR-Agent and Tabnine document self-host paths down to the free or air-gapped tier, while Greptile, Sourcery and Qodo put self-hosting behind Enterprise pricing, and Cursor BugBot does not offer it at all.
+
+Then measure on your own merge requests. The [Azure DevOps buyer's guide](https://aicodereview.io/blog/best-ai-code-review-tools-for-azure-devops-2026/) runs the same format for a different host, the [self-hosted verification guide](https://aicodereview.io/blog/self-hosted-ai-code-review-tools-what-to-verify-before-you-deploy/) covers the deployment questions in more depth, and the [multi-repo comparison](https://aicodereview.io/blog/ai-code-review-across-many-repos-what-to-actually-compare/) covers what changes when the reviewer has to reach across projects. All three exist because the host decides which parts of a reviewer you actually get.
+
+## FAQ
+
+**Does CodeRabbit work on GitLab?** Yes. Inline comments, file-level comments, submitting reviews and thread replies are all supported. Draft reviews are held by CodeRabbit and expire after 24 hours if unsubmitted, and there is no direct merge control on GitLab.
+
+**Is GitLab Duo Code Review free?** No. It requires GitLab Premium or Ultimate with the GitLab Duo Enterprise add-on.
+
+**Which AI code reviewers support self-managed GitLab?** CodeRabbit documents GitLab 16.x and above for self-managed instances, CodeAnt AI connects to GitLab self-managed, and Kodus and PR-Agent ship full self-host paths. Verify your GitLab version against each vendor's minimum before committing to a rollout.
